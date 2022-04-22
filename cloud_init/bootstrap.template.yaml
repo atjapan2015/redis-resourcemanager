@@ -1,0 +1,36 @@
+#cloud-config
+
+bootcmd:
+  # Create backup directory
+  - sudo mkdir -p /u01/redis_backup_tools
+  - sudo mkdir -p /u01/redis_restore_tools
+  - sudo mkdir -p /u01/redis_backup_snapshot
+
+write_files:
+  - path: "/u01/redis_backup_tools/redis_rdb_copy_hourly.sh"
+    permissions: "0755"
+    encoding: "gzip+base64"
+    content: |
+      ${redis_rdb_copy_hourly_sh_content}
+  - path: "/u01/redis_backup_tools/redis_rdb_copy_daily.sh"
+    permissions: "0755"
+    encoding: "gzip+base64"
+    content: |
+      ${redis_rdb_copy_daily_sh_content}
+  - path: "/u01/redis_restore_tools/redis_rdb_restore.sh"
+    permissions: "0755"
+    encoding: "gzip+base64"
+    content: |
+      ${redis_rdb_restore_sh_content}
+  - path: "/u01/redis_backup_tools/redis_rdb_copy_hourly_daily.cron"
+    permissions: "0755"
+    encoding: "gzip+base64"
+    content: |
+      ${redis_rdb_copy_hourly_daily_cron_content}
+
+runcmd:
+  - echo "Running k8s init..."
+  - cp /home/opc/.ssh/authorized_keys /home/opc/.ssh/authorized_keys.bak
+  - echo "${ssh_public_key}" >> /home/opc/.ssh/authorized_keys
+  - chown -R opc /home/opc/.ssh/authorized_keys
+  - echo "Finished k8s init."

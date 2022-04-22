@@ -1,0 +1,2 @@
+0 * * * * sh /u01/redis_backup_tools/redis_rdb_copy_hourly.sh
+0 0 * * * sh /u01/redis_backup_tools/redis_rdb_copy_daily.sh
