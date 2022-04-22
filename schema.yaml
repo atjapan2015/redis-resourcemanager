@@ -49,6 +49,7 @@ variableGroups:
       - sentinel_port
       - redis_config_is_use_rdb
       - redis_config_is_use_aof
+      - is_enable_backup
 
   - title: Monitoring Optional Configuration
     visible:
@@ -252,6 +253,16 @@ variables:
     title: "Append Only File(AOF)?"
     description: "Choose whether to use append only file(AOF) to persistence logs every write operation received by the server."
     default: false
+
+  is_enable_backup:
+    type: boolean
+    required: false
+    title: "Enable backup?"
+    description: "Choose whether to enable hourly and daily backup."
+    default: false
+    visible:
+      and:
+        - redis_config_is_use_rdb
 
   redis_port1:
     type: number

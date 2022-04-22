@@ -104,6 +104,7 @@ EOF
 systemctl daemon-reload
 
 # Install Redis Exporter
+%{ if is_use_prometheus ~}
 useradd --no-create-home --shell /bin/false redis-exporter
 wget https://github.com/oliver006/redis_exporter/releases/download/v1.37.0/redis_exporter-v1.37.0.linux-amd64.tar.gz
 tar xvfz redis_exporter-v1.37.0.linux-amd64.tar.gz
@@ -124,5 +125,6 @@ EOF
 systemctl daemon-reload
 systemctl enable redis-exporter.service
 systemctl start redis-exporter.service
+%{ endif ~}
 
 sleep 30

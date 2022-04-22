@@ -81,6 +81,12 @@ variable "redis_config_is_use_aof" {
   default     = false
 }
 
+variable "is_enable_backup" {
+  description = "true for enable backup, false for diable backup"
+  type        = bool
+  default     = false
+}
+
 variable "ssh_public_key" {
   default = ""
 }

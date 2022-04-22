@@ -20,8 +20,8 @@ resource "null_resource" "redis_master_start_redis_rediscluster" {
       "sleep 5",
       "sudo systemctl status redis.service",
       "echo '=== Started REDIS on redis${count.index} node... ==='",
-      "echo '=== Register REDIS Exporter to Prometheus... ==='",
-      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_master_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}"
+      "if [[ ${var.is_use_prometheus} == true ]] ; then echo '=== Register REDIS Exporter to Prometheus... ==='; fi",
+      "if [[ ${var.is_use_prometheus} == true ]] ; then curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_master_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}; fi"
     ]
   }
 }
@@ -45,8 +45,8 @@ resource "null_resource" "redis_replica_start_redis_rediscluster" {
       "sleep 5",
       "sudo systemctl status redis.service",
       "echo '=== Started REDIS on redis${count.index + var.redis_rediscluster_shared_count} node... ==='",
-      "echo '=== Register REDIS Exporter to Prometheus... ==='",
-      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_replica_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}"
+      "if [[ ${var.is_use_prometheus} == true ]] ; then echo '=== Register REDIS Exporter to Prometheus... ==='; fi",
+      "if [[ ${var.is_use_prometheus} == true ]] ; then curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_replica_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}; fi"
     ]
   }
 }
@@ -133,9 +133,9 @@ resource "null_resource" "redis_master_register_grafana_rediscluster" {
       timeout     = "10m"
     }
     inline = [
-      "echo '=== Register REDIS Datasource to Grafana... ==='",
-      "curl -X DELETE http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources/name/${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}",
-      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.redis_port1}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"cluster\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources"
+      "if [[ ${var.is_use_grafana} == true ]] ; then echo '=== Register REDIS Datasource to Grafana... ==='; fi",
+      "if [[ ${var.is_use_grafana} == true ]] ; then curl -X DELETE http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources/name/${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}; fi",
+      "if [[ ${var.is_use_grafana} == true ]] ; then curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.redis_port1}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"cluster\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources; fi"
     ]
   }
 }
