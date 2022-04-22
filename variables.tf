@@ -85,12 +85,24 @@ variable "ssh_public_key" {
   default = ""
 }
 
+variable "is_use_prometheus" {
+  description = "true for use prometheus, false for not use prometheus"
+  type        = bool
+  default     = false
+}
+
 variable "prometheus_server" {
   default = "redismanager"
 }
 
 variable "prometheus_port" {
   default = "9091"
+}
+
+variable "is_use_grafana" {
+  description = "true for use grafana, false for not use grafana"
+  type        = bool
+  default     = false
 }
 
 variable "grafana_server" {

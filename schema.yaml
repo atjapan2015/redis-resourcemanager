@@ -55,9 +55,11 @@ variableGroups:
       and:
         - show_advanced
     variables:
+      - is_use_prometheus
       - prometheus_server
       - prometheus_port
       - redis_exporter_port
+      - is_use_grafana
       - grafana_server
       - grafana_port
       - grafana_user
@@ -259,7 +261,7 @@ variables:
     multipleOf: 1
     default: 6379
     title: "Redis client port"
-    description: "Choose Redis normal client communication port (we recommend default 6379)."
+    description: "Choose Redis normal client communication port (We recommend default 6379)."
 
   redis_port2:
     type: number
@@ -269,7 +271,7 @@ variables:
     multipleOf: 1
     default: 16379
     title: "Redis cluster bus port"
-    description: "Choose Redis cluster bus port must be reachable from all the other cluster nodes. (we recommend default 16379)."
+    description: "Choose Redis cluster bus port must be reachable from all the other cluster nodes. (We recommend default 16379)."
 
   sentinel_port:
     type: number
@@ -279,7 +281,14 @@ variables:
     multipleOf: 1
     default: 26379
     title: "Redis Sentinel port"
-    description: "Choose Redis Sentinel port. (we recommend default 26379)."
+    description: "Choose Redis Sentinel port. (We recommend default 26379)."
+
+  is_use_prometheus:
+    type: boolean
+    required: false
+    title: "Monitor by prometheus?"
+    description: "Choose whether to use prometheus to collect metrics. (You must have an existing prometheus already)."
+    default: false
 
   prometheus_server:
     type: string
@@ -287,6 +296,9 @@ variables:
     default: "redismanager"
     title: "Prometheus server hostname or IP"
     description: "Input prometheus server hostname or IP."
+    visible:
+      and:
+        - is_use_prometheus
 
   prometheus_port:
     type: number
@@ -297,6 +309,9 @@ variables:
     default: 9091
     title: "Prometheus server port"
     description: "Input prometheus server port."
+    visible:
+      and:
+        - is_use_prometheus
 
   redis_exporter_port:
     type: number
@@ -305,8 +320,18 @@ variables:
     maximum: 65535
     multipleOf: 1
     default: 9121
-    title: "Redis exporter port for rometheus"
-    description: "Input redis exporter port for rometheus."
+    title: "Redis exporter port for prometheus"
+    description: "Input redis exporter port for prometheus."
+    visible:
+      and:
+        - is_use_prometheus
+
+  is_use_grafana:
+    type: boolean
+    required: false
+    title: "Visualized by grafana?"
+    description: "Choose whether to use grafana to visualize your metrics. (You must have an existing grafana already)."
+    default: false
 
   grafana_server:
     type: string
@@ -314,6 +339,9 @@ variables:
     default: "redismanager"
     title: "Grafana server hostname or IP"
     description: "Input grafana server hostname or IP."
+    visible:
+      and:
+        - is_use_grafana
 
   grafana_port:
     type: number
@@ -324,6 +352,9 @@ variables:
     default: 3000
     title: "Grafana server port"
     description: "Input grafana server port."
+    visible:
+      and:
+        - is_use_grafana
 
   grafana_user:
     type: string
@@ -331,6 +362,9 @@ variables:
     default: "admin"
     title: "Grafana server username"
     description: "Input grafana server username."
+    visible:
+      and:
+        - is_use_grafana
 
   grafana_password:
     type: password
@@ -338,6 +372,9 @@ variables:
     default: ""
     title: "Grafana server password"
     description: "Input grafana server password."
+    visible:
+      and:
+        - is_use_grafana
 
   ssh_public_key:
     type: oci:core:ssh:publickey
