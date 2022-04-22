@@ -96,7 +96,7 @@ Description=Redis
 
 [Service]
 User=root
-ExecStart=/usr/local/bin/sentinel /etc/sentinel.conf
+ExecStart=/usr/local/bin/redis-sentinel /etc/sentinel.conf
 Restart=always
 
 [Install]
