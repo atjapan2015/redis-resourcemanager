@@ -109,14 +109,6 @@ variable "grafana_password" {
   default = ""
 }
 
-variable "redis_insight_server" {
-  default = "redismanager"
-}
-
-variable "redis_insight_port" {
-  default = "8001"
-}
-
 variable "instance_os" {
   description = "Operating system for compute instances"
   default     = "Oracle Linux"

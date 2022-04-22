@@ -62,8 +62,6 @@ variableGroups:
       - grafana_port
       - grafana_user
       - grafana_password
-      - redis_insight_server
-      - redis_insight_port
 
   - title: Compute Optional Configuration
     visible:
@@ -340,23 +338,6 @@ variables:
     default: ""
     title: "Grafana server password"
     description: "Input grafana server password."
-
-  redis_insight_server:
-    type: string
-    required: false
-    default: "redismanager"
-    title: "Redis insight server hostname or IP"
-    description: "Input redis insight server hostname or IP."
-
-  redis_insight_port:
-    type: number
-    required: false
-    minimum: 0
-    maximum: 65535
-    multipleOf: 1
-    default: 8001
-    title: "Redis insight server port"
-    description: "Input Redis insight server port."
 
   ssh_public_key:
     type: oci:core:ssh:publickey

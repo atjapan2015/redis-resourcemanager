@@ -21,9 +21,7 @@ resource "null_resource" "redis_master_start_redis_masterslave" {
       "sudo systemctl status redis.service",
       "echo '=== Started REDIS on redis${count.index} node... ==='",
       "echo '=== Register REDIS Exporter to Prometheus... ==='",
-      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_master_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}",
-      "echo '=== Register REDIS Datasource to Redis Insight... ==='",
-      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"connectionType\":\"STANDALONE\",\"host\":\"${data.oci_core_vnic.redis_master_vnic[count.index].private_ip_address}\",\"port\":${var.redis_port1},\"password\":\"${random_string.redis_password.result}\"}' -H \"Content-Type: application/json\" -X POST http://${var.redis_insight_server}:${var.redis_insight_port}/api/instance/"
+      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_master_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}"
     ]
   }
 }
@@ -48,9 +46,7 @@ resource "null_resource" "redis_replica_start_redis_masterslave" {
       "sudo systemctl status redis.service",
       "echo '=== Started REDIS on redis${count.index + var.redis_masterslave_master_count} node... ==='",
       "echo '=== Register REDIS Exporter to Prometheus... ==='",
-      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_replica_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}",
-      "echo '=== Register REDIS Datasource to Redis Insight... ==='",
-      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_replica_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"connectionType\":\"STANDALONE\",\"host\":\"${data.oci_core_vnic.redis_replica_vnic[count.index].private_ip_address}\",\"port\":${var.redis_port1},\"password\":\"${random_string.redis_password.result}\"}' -H \"Content-Type: application/json\" -X POST http://${var.redis_insight_server}:${var.redis_insight_port}/api/instance/"
+      "curl -X GET http://${var.prometheus_server}:${var.prometheus_port}/prometheus/targets/add/${data.oci_core_vnic.redis_replica_vnic[count.index].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}_${var.redis_exporter_port}"
     ]
   }
 }
@@ -103,7 +99,7 @@ resource "null_resource" "redis_replica_start_sentinel_masterslave" {
   }
 }
 
-resource "null_resource" "redis_master_register_grafana_insight_masterslave" {
+resource "null_resource" "redis_master_register_grafana_masterslave" {
   depends_on = [null_resource.redis_replica_start_sentinel_masterslave]
   count      = (var.redis_deployment_type == "Master Slave") ? 1 : 0
   provisioner "remote-exec" {
@@ -119,9 +115,7 @@ resource "null_resource" "redis_master_register_grafana_insight_masterslave" {
     inline = [
       "echo '=== Register REDIS Datasource to Grafana... ==='",
       "curl -X DELETE http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources/name/${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}",
-      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.sentinel_port}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"sentinel\",\"sentinelAcl\":false,\"sentinelName\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_vcn.redis_vcn.dns_label}\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources",
-      "echo '=== Register REDIS Datasource to Redis Insight... ==='",
-      "curl -d '{\"name\":\"Sentinel.${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"connectionType\":\"SENTINEL\",\"sentinelHost\":\"${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}\",\"sentinelPort\":${var.sentinel_port},\"sentinelPassword\":\"\",\"sentinelMaster\":{\"serviceName\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"authPass\":\"${random_string.redis_password.result}\"}}' -H \"Content-Type: application/json\" -X POST http://${var.redis_insight_server}:${var.redis_insight_port}/api/instance/"
+      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.sentinel_port}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"sentinel\",\"sentinelAcl\":false,\"sentinelName\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_vcn.redis_vcn.dns_label}\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources"
     ]
   }
 }

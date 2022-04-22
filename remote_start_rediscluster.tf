@@ -69,7 +69,6 @@ resource "null_resource" "redis_master_master_list_rediscluster" {
       "sleep 10",
       "echo -n '${data.oci_core_vnic.redis_master_vnic[count.index].private_ip_address}:${var.redis_port1} ' >> /home/opc/master_list.sh",
       "echo -n '' > /home/opc/replica_list.sh",
-      "echo -n ',{\"host\":\"${data.oci_core_vnic.redis_master_vnic[count.index].private_ip_address}\",\"port\":${var.redis_port1}}' >> /home/opc/master_insight_list.sh",
       "echo '=== Started Create Master List on redis0 node... ==='"
     ]
   }
@@ -92,7 +91,6 @@ resource "null_resource" "redis_replica_replica_list_rediscluster" {
       "echo '=== Starting Create Replica List on redis0 node... ==='",
       "sleep 10",
       "echo -n '${data.oci_core_vnic.redis_replica_vnic[count.index].private_ip_address}:${var.redis_port1} ' >> /home/opc/replica_list.sh",
-      "echo -n ',{\"host\":\"${data.oci_core_vnic.redis_replica_vnic[count.index].private_ip_address}\",\"port\":${var.redis_port1}}' >> /home/opc/replica_insight_list.sh",
       "echo '=== Started Create Replica List on redis0 node... ==='"
     ]
   }
@@ -121,7 +119,7 @@ resource "null_resource" "redis_master_create_cluster_rediscluster" {
   }
 }
 
-resource "null_resource" "redis_master_register_grafana_insight_rediscluster" {
+resource "null_resource" "redis_master_register_grafana_rediscluster" {
   depends_on = [null_resource.redis_master_create_cluster_rediscluster]
   count      = (var.redis_deployment_type == "Redis Cluster") ? 1 : 0
   provisioner "remote-exec" {
@@ -137,13 +135,7 @@ resource "null_resource" "redis_master_register_grafana_insight_rediscluster" {
     inline = [
       "echo '=== Register REDIS Datasource to Grafana... ==='",
       "curl -X DELETE http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources/name/${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}",
-      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.redis_port1}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"cluster\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources",
-      "echo '=== Register REDIS Datasource to Redis Insight... ==='",
-      "echo -n '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"connectionType\":\"CLUSTER\",\"seedNodes\":[{\"host\":\"${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}\",\"port\":${var.redis_port1}}' > /home/opc/redis_insight_payload.json",
-      "cat /home/opc/master_insight_list.sh | tr '\n' ' ' >> /home/opc/redis_insight_payload.json",
-      "cat /home/opc/replica_insight_list.sh | tr '\n' ' ' >> /home/opc/redis_insight_payload.json",
-      "echo -n '],\"password\":\"${random_string.redis_password.result}\"}' >> /home/opc/redis_insight_payload.json",
-      "curl -d '@/home/opc/redis_insight_payload.json' -H \"Content-Type: application/json\" -X POST http://${var.redis_insight_server}:${var.redis_insight_port}/api/instance/"
+      "curl -d '{\"name\":\"${data.oci_core_vnic.redis_master_vnic[0].hostname_label}.${data.oci_core_subnet.redis_subnet.dns_label}\",\"type\":\"redis-datasource\",\"typeName\":\"Redis\",\"typeLogoUrl\":\"public/plugins/redis-datasource/img/logo.svg\",\"access\":\"proxy\",\"url\":\"redis://${data.oci_core_vnic.redis_master_vnic[0].private_ip_address}:${var.redis_port1}\",\"password\":\"\",\"user\":\"\",\"database\":\"\",\"basicAuth\":false,\"isDefault\":false,\"jsonData\":{\"client\":\"cluster\"},\"secureJsonData\":{\"password\":\"${random_string.redis_password.result}\"},\"readOnly\":false}' -H \"Content-Type: application/json\" -X POST http://${var.grafana_user}:${var.grafana_password}@${var.grafana_server}:${var.grafana_port}/api/datasources"
     ]
   }
 }
