@@ -19,14 +19,14 @@ systemctl restart firewalld
 yum install -y wget gcc
 
 # Download and compile Redis
+wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
+tar xvzf redis-${redis_version}.tar.gz
+cd redis-${redis_version}
 %{ if redis_version == "6.0.9" ~}
 yum install -y devtoolset-11
 echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile
 scl enable devtoolset-11 bash
 %{ endif ~}
-wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
-tar xvzf redis-${redis_version}.tar.gz
-cd redis-${redis_version}
 %{ if redis_version == "6.0.9" ~}
 make MALLOC=libc
 %{ endif ~}
@@ -137,3 +137,7 @@ systemctl start redis-exporter.service
 %{ endif ~}
 
 sleep 30
+
+%{ if redis_version == "6.0.9" ~}
+sleep 600
+%{ endif ~}
