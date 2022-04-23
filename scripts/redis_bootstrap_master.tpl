@@ -23,9 +23,9 @@ wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
 tar xvzf redis-${redis_version}.tar.gz
 cd redis-${redis_version}
 %{ if redis_version == "6.0.9" ~}
-yum install -y devtoolset-11
-echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile
-scl enable devtoolset-11 bash
+yum install -y devtoolset-9
+echo "source /opt/rh/devtoolset-/enable" >> /etc/profile
+scl enable devtoolset-9 bash
 %{ endif ~}
 %{ if redis_version == "6.0.9" ~}
 make MALLOC=libc
