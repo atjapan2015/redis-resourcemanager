@@ -27,6 +27,9 @@ scl enable devtoolset-11 bash
 wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
 tar xvzf redis-${redis_version}.tar.gz
 cd redis-${redis_version}
+%{ if redis_version == "6.0.9" ~}
+make MALLOC=libc
+%{ endif ~}
 make install
 
 mkdir -p /u01/redis_data
