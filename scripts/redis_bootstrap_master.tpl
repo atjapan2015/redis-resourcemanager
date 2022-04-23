@@ -16,17 +16,19 @@ firewall-offline-cmd --zone=public --add-port=${redis_exporter_port}/tcp
 systemctl restart firewalld
 
 # Install wget and gcc
+%{ if redis_version == "6.0.9" ~}
+yum install -y wget devtoolset-9
+#scl enable devtoolset-9 bash
+source /opt/rh/devtoolset-9/enable
+echo "source /opt/rh/devtoolset-9/enable" >> /etc/profile
+%{ else ~}
 yum install -y wget gcc
+%{ endif ~}
 
 # Download and compile Redis
 wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
 tar xvzf redis-${redis_version}.tar.gz
 cd redis-${redis_version}
-%{ if redis_version == "6.0.9" ~}
-yum install -y devtoolset-9
-echo "source /opt/rh/devtoolset-9/enable" >> /etc/profile
-scl enable devtoolset-9 bash
-%{ endif ~}
 %{ if redis_version == "6.0.9" ~}
 make MALLOC=libc
 %{ endif ~}
