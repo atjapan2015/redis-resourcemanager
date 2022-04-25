@@ -71,6 +71,8 @@ data "template_file" "redis_bootstrap_master_template" {
     redis_config_is_use_rdb = var.redis_config_is_use_rdb
     redis_config_is_use_aof = var.redis_config_is_use_aof
     is_use_prometheus       = var.is_use_prometheus
+    s3_access_key           = var.s3_access_key
+    s3_secret_key           = var.s3_secret_key
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_public_ips       = data.oci_core_vnic.redis_master_vnic.*.public_ip_address
@@ -91,6 +93,8 @@ data "template_file" "redis_bootstrap_replica_template" {
     redis_config_is_use_rdb = var.redis_config_is_use_rdb
     redis_config_is_use_aof = var.redis_config_is_use_aof
     is_use_prometheus       = var.is_use_prometheus
+    s3_access_key           = var.s3_access_key
+    s3_secret_key           = var.s3_secret_key
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_fqdn             = data.oci_core_vnic.redis_master_vnic.*.hostname_label

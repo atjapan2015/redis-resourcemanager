@@ -127,6 +127,14 @@ variable "grafana_password" {
   default = ""
 }
 
+variable "s3_access_key" {
+  default = ""
+}
+
+variable "s3_secret_key" {
+  default = ""
+}
+
 variable "instance_os" {
   description = "Operating system for compute instances"
   default     = "Oracle Linux"
@@ -173,6 +181,7 @@ locals {
     "VM.Standard3.Flex"
   ]
 }
+
 
 # Checks if is using Flexible Compute Shapes
 locals {

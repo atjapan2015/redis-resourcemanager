@@ -16,6 +16,8 @@ redis_config_is_use_aof = false
 is_enable_backup = true
 is_use_prometheus = true
 is_use_grafana = true
+s3_access_key = "ToDo"
+s3_secret_key = "ToDo"
 
 virtual_network_redis_vcn_id = "ToDO"
 subnet_redis_subnet_id = "ToDO"
