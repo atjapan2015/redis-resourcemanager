@@ -16,13 +16,13 @@ firewall-offline-cmd --zone=public --add-port=${redis_exporter_port}/tcp
 systemctl restart firewalld
 
 # Config sysctl.conf
-sysctl vm.overcommit_memory=1
 cat << EOF > /etc/sysctl.conf
 vm.swappiness = 1
 vm.overcommit_memory = 1
 net.core.somaxconn = 4096
 net.ipv4.tcp_max_syn_backlog = 4096
 EOF
+sysctl -p
 
 # Install wget and gcc
 %{ if redis_version == "6.0.9" ~}
@@ -38,9 +38,6 @@ yum install -y wget gcc
 wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
 tar xvzf redis-${redis_version}.tar.gz
 cd redis-${redis_version}
-#%{ if redis_version == "6.0.9" ~}
-#make MALLOC=libc
-#%{ endif ~}
 make install
 
 mkdir -p /u01/redis_data
@@ -151,11 +148,7 @@ yum install -y s3fs-fuse
 chmod +x /usr/bin/fusermount
 echo "${s3_access_key}:${s3_secret_key}" > /root/.passwd-s3fs
 chmod 600 /root/.passwd-s3fs
-s3fs RedisBucket /u01/redis_backup_snapshot -o endpoint=ap-chuncheon-1 -o passwd_file=/root/.passwd-s3fs -o url=https://sehubjapacprod.compat.objectstorage.ap-chuncheon-1.oraclecloud.com/ -o nomultipart -o use_path_request_style
-echo "RedisBucket /u01/redis_backup_snapshot fuse.s3fs _netdev,allow_other,multipart,use_path_request_style,endpoint=ap-chuncheon-1,url=https://sehubjapacprod.compat.objectstorage.ap-chuncheon-1.oraclecloud.com/ 0 0" >> /etc/fstab
+s3fs ${s3_bucket_name} /u01/redis_backup_snapshot -o endpoint=${region} -o passwd_file=/root/.passwd-s3fs -o url=https://${s3_namespace_name}.compat.objectstorage.${region}.oraclecloud.com/ -o nomultipart -o use_path_request_style
+echo "${s3_bucket_name} /u01/redis_backup_snapshot fuse.s3fs _netdev,allow_other,nomultipart,use_path_request_style,endpoint=${region},url=https://${s3_namespace_name}.compat.objectstorage.${region}.oraclecloud.com/ 0 0" >> /etc/fstab
 
 sleep 30
-
-%{ if redis_version == "6.0.9" ~}
-sleep 600
-%{ endif ~}

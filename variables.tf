@@ -127,6 +127,10 @@ variable "grafana_password" {
   default = ""
 }
 
+variable "s3_bucket_name" {
+  default = ""
+}
+
 variable "s3_access_key" {
   default = ""
 }

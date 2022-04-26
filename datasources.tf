@@ -60,6 +60,7 @@ data "template_cloudinit_config" "cloud_init" {
 
 data "template_file" "redis_bootstrap_master_template" {
   template = templatefile("./scripts/redis_bootstrap_master.tpl", {
+    region                  = var.region
     redis_deployment_type   = var.redis_deployment_type
     redis_prefix            = var.redis_prefix
     redis_domain            = data.oci_core_subnet.redis_subnet.dns_label
@@ -73,6 +74,8 @@ data "template_file" "redis_bootstrap_master_template" {
     is_use_prometheus       = var.is_use_prometheus
     s3_access_key           = var.s3_access_key
     s3_secret_key           = var.s3_secret_key
+    s3_bucket_name          = var.s3_bucket_name
+    s3_namespace_name       = data.oci_objectstorage_namespace.ns.namespace
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_public_ips       = data.oci_core_vnic.redis_master_vnic.*.public_ip_address
@@ -82,6 +85,7 @@ data "template_file" "redis_bootstrap_master_template" {
 
 data "template_file" "redis_bootstrap_replica_template" {
   template = templatefile("./scripts/redis_bootstrap_replica.tpl", {
+    region                  = var.region
     redis_deployment_type   = var.redis_deployment_type
     redis_prefix            = var.redis_prefix
     redis_domain            = data.oci_core_subnet.redis_subnet.dns_label
@@ -95,6 +99,8 @@ data "template_file" "redis_bootstrap_replica_template" {
     is_use_prometheus       = var.is_use_prometheus
     s3_access_key           = var.s3_access_key
     s3_secret_key           = var.s3_secret_key
+    s3_bucket_name          = var.s3_bucket_name
+    s3_namespace_name       = data.oci_objectstorage_namespace.ns.namespace
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_fqdn             = data.oci_core_vnic.redis_master_vnic.*.hostname_label

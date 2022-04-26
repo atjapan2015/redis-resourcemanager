@@ -50,6 +50,9 @@ variableGroups:
       - redis_config_is_use_rdb
       - redis_config_is_use_aof
       - is_enable_backup
+      - s3_bucket_name
+      - s3_access_key
+      - s3_secret_key
 
   - title: Monitoring Optional Configuration
     visible:
@@ -92,7 +95,7 @@ variables:
     title: "Show advanced options?"
     description: "Shows advanced options."
     visible: true
-    default: false
+    default: true
 
   compartment_ocid:
     type: oci:identity:compartment:id
@@ -241,30 +244,6 @@ variables:
             - redis_deployment_type
             - "Redis Cluster"
 
-  redis_config_is_use_rdb:
-    type: boolean
-    required: true
-    title: "RDB (Redis Database)?"
-    description: "Choose whether to use RDB (Redis Database) to perform point-in-time snapshots."
-    default: true
-
-  redis_config_is_use_aof:
-    type: boolean
-    required: true
-    title: "Append Only File(AOF)?"
-    description: "Choose whether to use append only file(AOF) to persistence logs every write operation received by the server."
-    default: false
-
-  is_enable_backup:
-    type: boolean
-    required: false
-    title: "Enable backup?"
-    description: "Choose whether to enable hourly and daily backup."
-    default: false
-    visible:
-      and:
-        - redis_config_is_use_rdb
-
   redis_port1:
     type: number
     required: true
@@ -294,6 +273,56 @@ variables:
     default: 26379
     title: "Redis Sentinel port"
     description: "Choose Redis Sentinel port. (We recommend default 26379)."
+
+
+  redis_config_is_use_rdb:
+    type: boolean
+    required: true
+    title: "RDB (Redis Database)?"
+    description: "Choose whether to use RDB (Redis Database) to perform point-in-time snapshots."
+    default: true
+
+  redis_config_is_use_aof:
+    type: boolean
+    required: true
+    title: "Append Only File(AOF)?"
+    description: "Choose whether to use append only file(AOF) to persistence logs every write operation received by the server."
+    default: false
+
+  is_enable_backup:
+    type: boolean
+    required: false
+    title: "Enable backup?"
+    description: "Choose whether to enable hourly and daily backup."
+    default: false
+    visible:
+      and:
+        - redis_config_is_use_rdb
+
+        - s3_bucket_name
+        - s3_access_key
+        - s3_secret_key
+
+  s3_bucket_name:
+    type: string
+    required: true
+    default: "RedisBucket"
+    title: "S3/S3 Compatibility Bucket Name"
+    description: "Name of S3/S3 Compatibility Bucket. (You must create it in advance)."
+
+  s3_access_key:
+    type: string
+    required: true
+    default: ""
+    title: "S3/S3 Compatibility Bucket access key"
+    description: "S3/S3 Compatibility Bucket access key. (You must create it in advance)."
+
+  s3_secret_key:
+    type: password
+    required: true
+    default: ""
+    title: "S3/S3 Compatibility Bucket secret key"
+    description: "S3/S3 Compatibility Bucket secret key. (You must create it in advance)."
 
   is_use_prometheus:
     type: boolean
