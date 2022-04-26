@@ -6,8 +6,8 @@ if [[ $(ls -l /u01/redis_backup_snapshot/ | grep '^d' | wc -l) == 0 ]]; then
 fi
 ls -l /u01/redis_backup_snapshot/ | grep '^d' | awk '{print $9}'
 read -p "Which backup do you want to restore? Please input the directory name: " directory
-if [[ -f "/u01/redis_backup_snapshot/$directory/dump.rdb" ]]; then
-  echo "/u01/redis_backup_snapshot/$directory/dump.rdb will be restored"
+if [[ -f "/u01/redis_backup_snapshot/$directory/$(hostname)/dump.rdb" ]]; then
+  echo "/u01/redis_backup_snapshot/$directory/$(hostname)/dump.rdb will be restored"
 else
   echo "The directory name is wrong, please run it again."
   exit 0
@@ -18,7 +18,7 @@ read -p "Are you sure to stop redis now or cancel the restore process? Restore o
   echo "stopping redis, please wait..."
   systemctl stop redis
   echo "redis stopped"
-  yes | cp /u01/redis_backup_snapshot/$directory/dump.rdb /u01/redis_data/dump.rdb
+  yes | cp /u01/redis_backup_snapshot/$directory/$(hostname)/dump.rdb /u01/redis_data/dump.rdb
   echo "dump.rdb restored"
   if [[ -f "/u01/redis_data/appendonly.aof" ]]; then
     sed -i 's/^appendonly yes$/#appendonly yes/' /etc/redis.conf

@@ -59,7 +59,7 @@ data "template_cloudinit_config" "cloud_init" {
 }
 
 data "template_file" "redis_bootstrap_master_template" {
-  template = templatefile("./scripts/redis_bootstrap_master.tpl", {
+  template = templatefile("./scripts/redis_bootstrap.tpl", {
     region                  = var.region
     redis_deployment_type   = var.redis_deployment_type
     redis_prefix            = var.redis_prefix
@@ -71,11 +71,12 @@ data "template_file" "redis_bootstrap_master_template" {
     redis_exporter_port     = var.redis_exporter_port
     redis_config_is_use_rdb = var.redis_config_is_use_rdb
     redis_config_is_use_aof = var.redis_config_is_use_aof
-    is_use_prometheus       = var.is_use_prometheus
+    is_enable_backup        = var.is_enable_backup
     s3_access_key           = var.s3_access_key
     s3_secret_key           = var.s3_secret_key
     s3_bucket_name          = var.s3_bucket_name
     s3_namespace_name       = data.oci_objectstorage_namespace.ns.namespace
+    is_use_prometheus       = var.is_use_prometheus
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_public_ips       = data.oci_core_vnic.redis_master_vnic.*.public_ip_address
@@ -84,7 +85,7 @@ data "template_file" "redis_bootstrap_master_template" {
 }
 
 data "template_file" "redis_bootstrap_replica_template" {
-  template = templatefile("./scripts/redis_bootstrap_replica.tpl", {
+  template = templatefile("./scripts/redis_bootstrap.tpl", {
     region                  = var.region
     redis_deployment_type   = var.redis_deployment_type
     redis_prefix            = var.redis_prefix
@@ -96,11 +97,12 @@ data "template_file" "redis_bootstrap_replica_template" {
     redis_exporter_port     = var.redis_exporter_port
     redis_config_is_use_rdb = var.redis_config_is_use_rdb
     redis_config_is_use_aof = var.redis_config_is_use_aof
-    is_use_prometheus       = var.is_use_prometheus
+    is_enable_backup        = var.is_enable_backup
     s3_access_key           = var.s3_access_key
     s3_secret_key           = var.s3_secret_key
     s3_bucket_name          = var.s3_bucket_name
     s3_namespace_name       = data.oci_objectstorage_namespace.ns.namespace
+    is_use_prometheus       = var.is_use_prometheus
     redis_password          = random_string.redis_password.result
     master_private_ips      = data.oci_core_vnic.redis_master_vnic.*.private_ip_address
     master_fqdn             = data.oci_core_vnic.redis_master_vnic.*.hostname_label

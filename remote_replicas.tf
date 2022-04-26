@@ -17,6 +17,7 @@ resource "null_resource" "redis_replica_bootstrap" {
     content     = data.template_file.redis_bootstrap_replica_template.rendered
     destination = "/home/opc/redis_bootstrap_replica.sh"
   }
+
   provisioner "remote-exec" {
     connection {
       type        = "ssh"

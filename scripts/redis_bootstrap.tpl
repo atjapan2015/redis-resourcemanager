@@ -8,6 +8,9 @@ EXTERNAL_IP=$(curl -s -m 10 http://whatismyip.akamai.com/)
 REDIS_CONFIG_FILE=/etc/redis.conf
 SENTINEL_CONFIG_FILE=/etc/sentinel.conf
 
+# Install softwares
+yum install -y wget devtoolset-11-gcc devtoolset-11-gcc-c++ devtoolset-11-binutils s3fs-fuse
+
 # Setup firewall rules
 firewall-offline-cmd --zone=public --add-port=${redis_port1}/tcp
 firewall-offline-cmd --zone=public --add-port=${redis_port2}/tcp
@@ -24,21 +27,12 @@ net.ipv4.tcp_max_syn_backlog = 4096
 EOF
 sysctl -p
 
-# Install wget and gcc
-%{ if redis_version == "6.0.9" ~}
-yum install -y wget devtoolset-9-gcc devtoolset-9-gcc-c++ devtoolset-9-binutils
-scl enable devtoolset-9 bash
-#source /opt/rh/devtoolset-9/enable
-echo "source /opt/rh/devtoolset-9/enable" >> /etc/profile
-%{ else ~}
-yum install -y wget gcc
-%{ endif ~}
-
 # Download and compile Redis
 wget http://download.redis.io/releases/redis-${redis_version}.tar.gz
 tar xvzf redis-${redis_version}.tar.gz
 cd redis-${redis_version}
-make install
+
+source /opt/rh/devtoolset-11/enable && make install
 
 mkdir -p /u01/redis_data
 mkdir -p /var/log/redis/
@@ -145,15 +139,14 @@ systemctl start redis-exporter.service
 %{ endif ~}
 
 # Install s3fs
-yum install -y s3fs-fuse
+%{ if is_enable_backup ~}
 chmod +x /usr/bin/fusermount
 echo "${s3_access_key}:${s3_secret_key}" > /root/.passwd-s3fs
 chmod 600 /root/.passwd-s3fs
-s3fs ${s3_bucket_name} /u01/redis_backup_snapshot -o endpoint=${region} -o passwd_file=/root/.passwd-s3fs -o url=https://${tenant_name}.compat.objectstorage.${region}.oraclecloud.com/ -o nomultipart -o use_path_request_style
-echo "${s3_bucket_name} /u01/redis_backup_snapshot fuse.s3fs _netdev,allow_other,nomultipart,use_path_request_style,endpoint=${region},url=https://${tenant_name}.compat.objectstorage.${region}.oraclecloud.com/ 0 0" >> /etc/fstab
+echo "${s3_bucket_name} /u01/redis_backup_snapshot fuse.s3fs _netdev,allow_other,nomultipart,use_path_request_style,endpoint=${region},url=https://${s3_namespace_name}.compat.objectstorage.${region}.oraclecloud.com/ 0 0" >> /etc/fstab
+s3fs ${s3_bucket_name} /u01/redis_backup_snapshot -o endpoint=${region} -o passwd_file=/root/.passwd-s3fs -o url=https://${s3_namespace_name}.compat.objectstorage.${region}.oraclecloud.com/ -o nomultipart -o use_path_request_style
+%{ endif ~}
+
+echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile
 
 sleep 30
-
-%{ if redis_version == "6.0.9" ~}
-sleep 600
-%{ endif ~}
