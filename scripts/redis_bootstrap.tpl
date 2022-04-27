@@ -8,6 +8,8 @@ EXTERNAL_IP=$(curl -s -m 10 http://whatismyip.akamai.com/)
 REDIS_CONFIG_FILE=/etc/redis.conf
 SENTINEL_CONFIG_FILE=/etc/sentinel.conf
 
+sleep 30
+
 # Install softwares
 %{ if redis_version == "6.0.16" ~}
 yum install -y wget devtoolset-11-gcc devtoolset-11-gcc-c++ devtoolset-11-binutils s3fs-fuse
