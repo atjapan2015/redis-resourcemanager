@@ -160,12 +160,12 @@ variables:
   redis_version:
     type: enum
     required: true
-    default: "5.0.9"
+    default: "5.0.14"
     title: "Redis version"
     description: "Choose Redis version to be deployed."
     enum:
-      - "5.0.9"
-      - "6.0.9"
+      - "5.0.14"
+      - "6.0.16"
       - "6.2.6"
       - "7.0-rc3"
 
@@ -273,7 +273,6 @@ variables:
     default: 26379
     title: "Redis Sentinel port"
     description: "Choose Redis Sentinel port. (We recommend default 26379)."
-
 
   redis_config_is_use_rdb:
     type: boolean
