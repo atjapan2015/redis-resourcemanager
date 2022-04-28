@@ -11,6 +11,7 @@ redis_deployment_type = "Master Slave" # ["Standalone", "Master Slave", "Redis C
 redis_prefix = "myredis"
 grafana_password = "ToDo"
 redis_version = "5.0.14"
+redis_maxmemory = 1024
 redis_config_is_use_rdb = true
 redis_config_is_use_aof = false
 is_enable_backup = true

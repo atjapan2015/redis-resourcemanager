@@ -3,7 +3,7 @@
 
 resource "oci_core_instance" "redis_master" {
   count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")?var.redis_rediscluster_shared_count : var.redis_standalone_master_count)
-  availability_domain = var.availablity_domain_name
+  availability_domain = length(data.oci_identity_availability_domains.availability_domains.availability_domains) == 1 ? "${lookup(data.oci_identity_availability_domains.availability_domains.availability_domains[0],"name")}" : "${lookup(data.oci_identity_availability_domains.availability_domains.availability_domains[count.index%3+1],"name")}"
   fault_domain        = "FAULT-DOMAIN-${count.index%3+1}"
   compartment_id      = var.compartment_ocid
   display_name        = "${var.redis_prefix}${count.index}"

@@ -65,6 +65,7 @@ data "template_file" "redis_bootstrap_master_template" {
     redis_prefix            = var.redis_prefix
     redis_domain            = data.oci_core_subnet.redis_subnet.dns_label
     redis_version           = var.redis_version
+    redis_maxmemory         = var.redis_maxmemory
     redis_port1             = var.redis_port1
     redis_port2             = var.redis_port2
     sentinel_port           = var.sentinel_port
@@ -91,6 +92,7 @@ data "template_file" "redis_bootstrap_replica_template" {
     redis_prefix            = var.redis_prefix
     redis_domain            = data.oci_core_subnet.redis_subnet.dns_label
     redis_version           = var.redis_version
+    redis_maxmemory         = var.redis_maxmemory
     redis_port1             = var.redis_port1
     redis_port2             = var.redis_port2
     sentinel_port           = var.sentinel_port

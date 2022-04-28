@@ -57,6 +57,11 @@ variable "redis_version" {
   default = "stable"
 }
 
+variable "redis_maxmemory" {
+  type    = number
+  default = 1024000000
+}
+
 variable "redis_port1" {
   default = "6379"
 }
@@ -156,7 +161,7 @@ variable "instance_shape" {
 }
 
 variable "instance_flex_shape_ocpus" {
-  default = 1
+  default = 2
 }
 
 variable "instance_flex_shape_memory" {

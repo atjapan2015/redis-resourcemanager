@@ -19,7 +19,7 @@ variableGroups:
     visible: true
     variables:
       - compartment_ocid
-      - availablity_domain_name
+#      - availablity_domain_name
 
   - title: Networking Optional Configuration
     variables:
@@ -44,6 +44,7 @@ variableGroups:
       - redis_masterslave_replica_count
       - redis_rediscluster_shared_count
       - redis_rediscluster_slave_count
+      - redis_maxmemory
       - redis_port1
       - redis_port2
       - sentinel_port
@@ -111,14 +112,14 @@ variables:
     title: "Region"
     description: "Choose region where you want to deploy the resources defined by this stack."
 
-  availablity_domain_name:
-    type: oci:identity:availabilitydomain:name
-    required: true
-    visibile: true
-    title: "Availability Domain"
-    description: "Choose availability Domain to be chosen for deploy of Redis compute instances."
-    dependsOn:
-      compartmentId: ${compartment_ocid}
+#  availablity_domain_name:
+#    type: oci:identity:availabilitydomain:name
+#    required: true
+#    visibile: true
+#    title: "Availability Domain"
+#    description: "Choose availability Domain to be chosen for deploy of Redis compute instances."
+#    dependsOn:
+#      compartmentId: ${compartment_ocid}
 
   virtual_network_redis_vcn_id:
     type: oci:core:vcn:id
@@ -160,7 +161,7 @@ variables:
   redis_version:
     type: enum
     required: true
-    default: "5.0.14"
+    default: "6.2.6"
     title: "Redis version"
     description: "Choose Redis version to be deployed."
     enum:
@@ -243,6 +244,14 @@ variables:
         - eq:
             - redis_deployment_type
             - "Redis Cluster"
+
+  redis_maxmemory:
+    type: number
+    required: true
+    minimum: 1
+    multipleOf: 1
+    title: "Redis maxmemory"
+    description: "Input Redis maxmemory."
 
   redis_port1:
     type: number
