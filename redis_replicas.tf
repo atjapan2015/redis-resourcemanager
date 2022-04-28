@@ -3,8 +3,8 @@
 
 resource "oci_core_instance" "redis_replica" {
   count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shard_count : 0)
-  availability_domain = length(data.oci_identity_availability_domains.ads.availability_domains) == 1 ? lookup(data.oci_identity_availability_domains.ads.availability_domains[0],"name") : lookup(data.oci_identity_availability_domains.ads.availability_domains[count.index%3],"name")
-  fault_domain        = "FAULT-DOMAIN-${(count.index+2)%3+1}"
+  availability_domain = length(data.oci_identity_availability_domains.ads.availability_domains) == 1 ? lookup(data.oci_identity_availability_domains.ads.availability_domains[0], "name") : lookup(data.oci_identity_availability_domains.ads.availability_domains[count.index % 3], "name")
+  fault_domain        = "FAULT-DOMAIN-${(count.index + ((var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : var.redis_rediscluster_shard_count)) % 3 + 1}"
   compartment_id      = var.compartment_ocid
   display_name        = "${var.redis_prefix}${count.index + ((var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : var.redis_rediscluster_shard_count)}"
   shape               = var.instance_shape
