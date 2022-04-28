@@ -112,24 +112,24 @@ data "template_file" "redis_bootstrap_replica_template" {
 }
 
 data "oci_core_vnic_attachments" "redis_master_vnics" {
-  count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")?var.redis_rediscluster_shared_count : var.redis_standalone_master_count)
+  count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")?var.redis_rediscluster_shard_count : var.redis_standalone_master_count)
   compartment_id      = var.compartment_ocid
   instance_id         = oci_core_instance.redis_master[count.index].id
 }
 
 data "oci_core_vnic" "redis_master_vnic" {
-  count   = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")?var.redis_rediscluster_shared_count : var.redis_standalone_master_count)
+  count   = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")?var.redis_rediscluster_shard_count : var.redis_standalone_master_count)
   vnic_id = data.oci_core_vnic_attachments.redis_master_vnics[count.index].vnic_attachments.0.vnic_id
 }
 
 data "oci_core_vnic_attachments" "redis_replica_vnics" {
-  count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count * var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shared_count : 0)
+  count               = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count * var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shard_count : 0)
   compartment_id      = var.compartment_ocid
   instance_id         = oci_core_instance.redis_replica[count.index].id
 }
 
 data "oci_core_vnic" "redis_replica_vnic" {
-  count   = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count * var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shared_count : 0)
+  count   = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count * var.redis_masterslave_master_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shard_count : 0)
   vnic_id = data.oci_core_vnic_attachments.redis_replica_vnics[count.index].vnic_attachments.0.vnic_id
 }
 

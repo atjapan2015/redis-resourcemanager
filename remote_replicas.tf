@@ -3,7 +3,7 @@
 
 resource "null_resource" "redis_replica_bootstrap" {
   depends_on = [oci_core_instance.redis_master, oci_core_instance.redis_replica]
-  count = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shared_count : 0)
+  count = (var.redis_deployment_type == "Master Slave") ? var.redis_masterslave_replica_count : ((var.redis_deployment_type == "Redis Cluster")? var.redis_rediscluster_slave_count * var.redis_rediscluster_shard_count : 0)
   provisioner "file" {
     connection {
       type        = "ssh"
