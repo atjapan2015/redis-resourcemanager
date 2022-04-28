@@ -3,9 +3,7 @@ user_ocid        = "ocid1.user.oc1.ToDo"
 private_key_path = "/home/oracle/.oci/oci_api_key.pem"
 fingerprint      = "ToDo"
 region           = "ap-chuncheon-1"
-
 compartment_ocid        = "ocid1.compartment.ToDo"
-availablity_domain_name = "bxtG:AP-CHUNCHEON-1-AD-1"
 
 redis_deployment_type = "Master Slave" # ["Standalone", "Master Slave", "Redis Cluster"]
 redis_prefix = "myredis"

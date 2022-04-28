@@ -7,7 +7,6 @@ variable "fingerprint" {}
 variable "private_key_path" {}
 variable "region" {}
 variable "compartment_ocid" {}
-variable "availablity_domain_name" {}
 
 variable "ssh_public_key" {
   default = ""
