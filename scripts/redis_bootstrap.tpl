@@ -25,6 +25,7 @@ EOF
 sysctl -p
 
 # Install softwares
+if [[ -f /etc/yum.repos.d/oracle-epel-ol7.repo ]]; then sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/oracle-epel-ol7.repo; fi
 while [[ ! -f /opt/rh/devtoolset-9/root/usr/bin/gcc ]] || [[ ! -f /usr/bin/s3fs ]]; do yum install -y wget devtoolset-9 s3fs-fuse; done
 source /opt/rh/devtoolset-9/enable
 echo "source /opt/rh/devtoolset-9/enable" >> /etc/profile
